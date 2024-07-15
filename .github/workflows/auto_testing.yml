@@ -8,8 +8,6 @@ jobs:
     name: auto create and push release
     runs-on: ubuntu-22.04
     steps:
-      - uses: cachix/install-nix-action@v27
-
       - name: Checkout repository
         uses: actions/checkout@master
         with:
@@ -41,12 +39,7 @@ jobs:
               | sed 's/\//\\\//g'
           )
           SRC="src = fetchurl {\n    url = \"${URL}\";\n    sha256 = \"${{ env.FILE_HASH }}\";\n  }"
-          sed -i "s/src = .\/src/src = .\/${{ env.FILE_NAME }}/g" ./package.nix
-          git add ./${{ env.FILE_NAME }}
-          nix build
-          git reset ./${{ env.FILE_NAME }}
-          sed -i "s/src = .\/${{ env.FILE_NAME }}/${SRC}/g" ./package.nix
-          sed -i "s/version = \".*\";/version = \"${{ env.TAG_NAME }}\";/g" ./package.nix
+          sed -i "s/src = .\/src/${SRC}/g" ./package.nix
           sed -i "1s/.*/{\n  fetchurl,/" ./package.nix
 
       - name: Create Release

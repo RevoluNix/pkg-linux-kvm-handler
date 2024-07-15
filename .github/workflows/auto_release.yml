@@ -8,11 +8,6 @@ jobs:
     name: auto create and push release
     runs-on: ubuntu-22.04
     steps:
-      - uses: cachix/install-nix-action@v27
-        with:
-          name: domenkozar-private
-          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
-
       - name: Checkout repository
         uses: actions/checkout@master
           
@@ -42,11 +37,7 @@ jobs:
               | sed 's/\//\\\//g'
           )
           SRC="src = fetchurl {\n    url = \"${URL}\";\n    sha256 = \"${{ env.FILE_HASH }}\";\n  }"
-          sed -i "s/src = .\/src/src = .\/${{ env.FILE_NAME }}/g" ./package.nix
-          git add ./${{ env.FILE_NAME }}
-          git reset ./${{ env.FILE_NAME }}
-          sed -i "s/src = .\/${{ env.FILE_NAME }}/${SRC}/g" ./package.nix
-          sed -i "s/version = \".*\";/version = \"${{ env.TAG_NAME }}\";/g" ./package.nix
+          sed -i "s/src = .\/src/${SRC}/g" ./package.nix
           sed -i "1s/.*/{\n  fetchurl,/" ./package.nix
 
       - name: Create Release

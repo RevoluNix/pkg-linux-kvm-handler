@@ -1,4 +1,8 @@
-{ lib, buildLinux, ... } @ args:
+{
+  lib,
+  buildLinux,
+  ...
+} @ args:
 
 let
   version = "6.5";
