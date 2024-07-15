@@ -44,18 +44,10 @@ jobs:
           SRC="src = fetchurl {\n    url = \"${URL}\";\n    sha256 = \"${{ env.FILE_HASH }}\";\n  }"
           sed -i "s/src = .\/src/src = .\/${{ env.FILE_NAME }}/g" ./package.nix
           git add ./${{ env.FILE_NAME }}
-          nix build -L
           git reset ./${{ env.FILE_NAME }}
           sed -i "s/src = .\/${{ env.FILE_NAME }}/${SRC}/g" ./package.nix
           sed -i "s/version = \".*\";/version = \"${{ env.TAG_NAME }}\";/g" ./package.nix
           sed -i "1s/.*/{\n  fetchurl,/" ./package.nix
-
-      - name: Deploy
-        env:
-          CACHIX_AUTH_TOKEN: "${{ secrets.CACHIX_ACTIVATE_TOKEN }}"
-        run: |
-          cachix push pikatsuto ./result
-          cachix deploy activate --agent cherimoya ./result
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
